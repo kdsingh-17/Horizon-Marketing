@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Horizon Marketing</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="#leads"><i class="fas fa-users"></i> Leads</a>
+                <a href="#analytics"><i class="fas fa-chart-bar"></i> Analytics</a>
+                <a href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> View Website</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn btn-outline" style="width: 100%;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>Leads Dashboard</h1>
+                <div class="admin-actions">
+                    <button id="refreshBtn" class="btn btn-outline">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid" id="statsCards">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #3a86ff;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalLeads">0</h3>
+                        <p>Total Leads</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #ff006e;">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="newLeads">0</h3>
+                        <p>New Leads</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #8338ec;">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="contactedLeads">0</h3>
+                        <p>Contacted</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #06d6a0;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="convertedLeads">0</h3>
+                        <p>Converted</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="admin-row">
+                <div class="admin-col">
+                    <div class="admin-card">
+                        <h3>Leads by Service</h3>
+                        <canvas id="serviceChart" height="250"></canvas>
+                    </div>
+                </div>
+                <div class="admin-col">
+                    <div class="admin-card">
+                        <h3>Recent Activity</h3>
+                        <div id="recentLeads" style="min-height: 250px; overflow-y: auto;">
+                            <p>Loading recent leads...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leads Table -->
+            <div class="admin-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>All Leads</h3>
+                    <div>
+                        <input type="text" id="searchLeads" placeholder="Search leads..." style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 10px;">
+                        <select id="statusFilter" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">All Status</option>
+                            <option value="new">New</option>
+                            <option value="contacted">Contacted</option>
+                            <option value="converted">Converted</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="leadsTable" style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="padding: 12px; text-align: left;">Name</th>
+                                <th style="padding: 12px; text-align: left;">Business</th>
+                                <th style="padding: 12px; text-align: left;">Service</th>
+                                <th style="padding: 12px; text-align: left;">Date</th>
+                                <th style="padding: 12px; text-align: left;">Status</th>
+                                <th style="padding: 12px; text-align: left;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadsTableBody">
+                            <tr><td colspan="6" style="padding: 20px; text-align: center;">Loading leads...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                    <div id="paginationInfo">Showing 0 of 0 leads</div>
+                    <div>
+                        <button id="prevPage" class="btn btn-outline" disabled>Previous</button>
+                        <button id="nextPage" class="btn btn-outline" disabled>Next</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3>Update Lead Status</h3>
+            <div style="margin: 20px 0;">
+                <label style="display: block; margin-bottom: 10px;">Status:</label>
+                <select id="updateStatus" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="new">New</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="converted">Converted</option>
+                    <option value="archived">Archived</option>
+                </select>
+            </div>
+            <div style="margin: 20px 0;">
+                <label style="display: block; margin-bottom: 10px;">Notes:</label>
+                <textarea id="updateNotes" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="saveStatus" class="btn btn-accent">Save</button>
+                <button id="cancelStatus" class="btn btn-outline">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
